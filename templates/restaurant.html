@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Restaurants</h1>
+
+<a href='{{url_for("NewRestaurant")}}'>Add a new restaurant</a>
+<br><br>
+
+<!--
+########################################################################
+#   Code for Flash Messages
+######################################################################## 
+-->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    {% for message in messages %}
+        <strong>{{message}}</strong>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+<!--
+########################################################################
+#   Listing all available restaurants
+########################################################################
+-->
+<ul>
+{% for a in restaurants %}
+    <li><a href="{{url_for('RestaurantMenu', restaurant_id = a.id)}}">{{a.name}}</a><br> 
+    	<a href="{{url_for('EditRestaurant', restaurant_id = a.id)}}">Edit</a><br>
+    	<a href="{{url_for('DeleteRestaurant', restaurant_id = a.id)}}">Delete</a>
+    </li><br>
+{% endfor %}
+</ul>
+</body>
+</html>

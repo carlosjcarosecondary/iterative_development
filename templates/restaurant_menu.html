@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>{{a.name}}</h1><br>
+
+<a href='{{url_for("RestaurantMenuNew", restaurant_id = restaurant_id)}}'>
+Add a new menu item</a>
+<br><br>
+
+<!--
+########################################################################
+#   Code for Flash Messages
+######################################################################## 
+-->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    {% for message in messages %}
+        <strong>{{message}}</strong>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+<!--
+########################################################################
+#   Listing menu from restaurants
+########################################################################
+-->
+{% if b %}
+	{% for i in b %}
+		<div>
+		<p><strong>{{i.name}}</strong></p>
+		<p>{{i.description}}</p>
+		<p> {{i.price}} </p>
+		<br>
+		</div>
+	{% endfor %}
+{% else %}
+	<h3>No items in Menu</h3>
+{% endif %}
+
+</body>
+</html>
