@@ -2,7 +2,7 @@
 Created on Feb 13th, 2018
 
 # 1. Routing --> Done
-# 2. Templates & forms --> 
+# 2. Templates & forms --> Done
 # 3. CRUD functionality
 # 4. API end points
 
@@ -78,7 +78,7 @@ def RestaurantMenu(restaurant_id):
 	return render_template('restaurant_menu.html', a = menuRestaurant, b = menuItems, 
 		restaurant_id = restaurant_id)
 
-@app.route('/restaurants/<int:restaurant_id>/menu/new', methods = ['GET', 'POST'])
+@app.route('/restaurants/<int:restaurant_id>/menu/new/', methods = ['GET', 'POST'])
 def RestaurantMenuNew(restaurant_id):
 	menuRestaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
 	menuItems = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
@@ -92,8 +92,6 @@ def RestaurantMenuNew(restaurant_id):
 			session.add(newMenuItem)
 			session.commit()
 			flash('New menu item has been added successfully')
-			# return render_template('restaurant_menu.html', restaurant_id = restaurant_id,
-			# 	a = menuRestaurant, b = menuItems)
 			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
 		elif request.form['submit'] == 'Cancel':
 			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
@@ -101,13 +99,42 @@ def RestaurantMenuNew(restaurant_id):
 		return render_template('restaurant_menu_new.html', restaurant_id = restaurant_id, 
 		a=menuRestaurant)
 
-@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/edit')
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/edit/', methods = ['GET', 'POST'])
 def RestaurantMenuEdit(restaurant_id, menu_id):
-	return 'Edit item in Restaurant Menu'
+	menuRestaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+	menuItem = session.query(MenuItem).filter_by(id = menu_id).one()
+	if request.method == 'POST':
+		if request.form['submit'] == 'Edit':
+			if request.form['name']:
+				menuItem.name = request.form['name']
+			if request.form['description']:
+				menuItem.description = request.form['description']
+			if request.form['price']:
+				menuItem.price = request.form['price']	
+			session.add(menuItem)
+			session.commit()
+			flash('Menu item has been edited successfully')
+			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
+		elif request.form['submit'] == 'Cancel':
+			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
+	else:
+		return render_template('restaurant_menu_edit.html',
+			restaurant_id = restaurant_id, menu_id = menu_id, a = menuRestaurant, b = menuItem)
 
-@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/delete')
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/delete', methods = ['GET', 'POST'])
 def RestaurantMenuDelete(restaurant_id, menu_id):
-	return 'Delete item in Restaurant Menu'
+	menuRestaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+	menuItem = session.query(MenuItem).filter_by(id = menu_id).one()
+	if request.method == 'POST':
+		if request.form['submit'] == 'Delete':
+			session.delete(menuItem)
+			session.commit()
+			flash('Menu item has been deleted successfully')
+			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
+		elif request.form['submit'] == 'Cancel':
+			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
+	return render_template('restaurant_menu_delete.html',
+			restaurant_id = restaurant_id, menu_id = menu_id, a = menuRestaurant, b = menuItem)
 
 if __name__ == '__main__':
 	app.secret_key = 'super_secret_key'

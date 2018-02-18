@@ -4,6 +4,7 @@
 
 <h1>{{a.name}}</h1><br>
 
+<a href='/'>Main Page</a><br><br>
 <a href='{{url_for("RestaurantMenuNew", restaurant_id = restaurant_id)}}'>
 Add a new menu item</a>
 <br><br>
@@ -31,8 +32,12 @@ Add a new menu item</a>
 		<p><strong>{{i.name}}</strong></p>
 		<p>{{i.description}}</p>
 		<p> {{i.price}} </p>
-		<br>
+		<a href='{{url_for("RestaurantMenuEdit", restaurant_id = restaurant_id, 
+		menu_id = i.id)}}'>Edit</a><br>
+		<a href='{{url_for("RestaurantMenuDelete", restaurant_id = restaurant_id, 
+		menu_id = i.id)}}'>Delete</a><br>
 		</div>
+		<br><br>
 	{% endfor %}
 {% else %}
 	<h3>No items in Menu</h3>
