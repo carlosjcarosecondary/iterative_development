@@ -9,11 +9,11 @@ Created on Feb 13th, 2018
 @author: carloscaro
 '''
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
-app = Flask(__name__)
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem
+
+app = Flask(__name__)
 
 engine = create_engine('sqlite:///restaurantmenu.db')
 Base.metadata.bind = engine
@@ -135,6 +135,23 @@ def RestaurantMenuDelete(restaurant_id, menu_id):
 			return redirect(url_for('RestaurantMenu', restaurant_id = restaurant_id))
 	return render_template('restaurant_menu_delete.html',
 			restaurant_id = restaurant_id, menu_id = menu_id, a = menuRestaurant, b = menuItem)
+
+# API Endpoints
+@app.route('/restaurants/JSON/')
+def restaurantsJSON():
+	restaurants = session.query(Restaurant).all()
+	return jsonify(Restaurants=[i.serialize for i in restaurants])
+
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON/')
+def restaurantMenuJSON(restaurant_id):
+	restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+	restaurantmenu = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
+	return jsonify(RestaurantMenu=[i.serialize for i in restaurantmenu])
+
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/JSON/')
+def restaurantMenuItemJSON(restaurant_id, menu_id):
+	menuItem = session.query(MenuItem).filter_by(id = menu_id).one()
+	return jsonify(MenuItem=menuItem.serialize)
 
 if __name__ == '__main__':
 	app.secret_key = 'super_secret_key'
